@@ -11,12 +11,11 @@
 	const WIDTH = 800;
 	const HEIGHT = 600;
 
-	const canvas = document.getElementById("canvas");
-	const ctx = canvas.getContext("2d");
-
 	// Variables
 	
 	let player;
+	let canvas = document.getElementById("canvas");
+	let ctx = canvas.getContext("2d");
 	
 	// Helpers
 
@@ -48,12 +47,14 @@
 		draw() {
 			let cx = this.x + this.width/2;
 			let cy = this.y + this.height/2;
+
 			ctx.translate(cx, cy);
 			ctx.rotate(this.angle * Math.PI/180);
 			ctx.translate(-cx, -cy);
 			ctx.fillStyle = "#ff0000";
 			ctx.fillRect(this.x, this.y, this.width, this.height);
 			ctx.resetTransform();
+
 			ctx.fillStyle = "#000000";
 			ctx.font = "10px Arial";
 			ctx.fillText(this.name, this.x, cy + this.height);
@@ -82,9 +83,13 @@
 		update(dt) {
 			if(this.input.up) {
 				this.velocity = Util.limit(this.velocity + this.acceleration * dt, 0, this.maxVelocity);
-			} else if(this.input.down) {
+			}
+
+			else if(this.input.down) {
 				this.velocity = Util.limit(this.velocity - this.breaking * dt, 0, this.maxVelocity);
-			} else {
+			}
+
+			else {
 				this.velocity = Util.limit(this.velocity - this.deceleration * dt, 0, this.maxVelocity);
 			}
 
