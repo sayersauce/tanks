@@ -1,14 +1,14 @@
 # TODO For Tanks
 
 ## Features
-- Camera with smooth movement
-- Map with size increased
+- Camera 😎
+- Map with size increased 😎
 - Maps from map file
 - Add game objective (free for all, team deathmatch, ctf)
 - Add menu
 - Add UI
 - Add sounds
-- Add animations
+- Add animations 🤠
 - Add objects
 - Webpage design
 

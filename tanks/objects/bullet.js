@@ -9,11 +9,11 @@
 			this.x = x + (barrelLength * Math.sin(angle * Math.PI/180)) - this.image.width/2;
 			this.y = y - (barrelLength * Math.cos(angle * Math.PI/180)) - this.image.height/2;
 			this.angle = angle;
-			this.velocity = 300;
+			this.velocity = 400;
 		}
 
 		draw() {
-			gfx.drawImage(this.image, this.x, this.y, this.image.width, this.image.height, this.angle);
+			GFX.drawImage(this.image, this.x, this.y, this.image.width, this.image.height, this.angle);
 		}
 
 		update(dt) {
