@@ -13,7 +13,7 @@
 - Webpage design
 
 ## Multiplayer
-- Implement basic socket connections
+- Implement basic socket connections 😎
 - Add scoring
 - Add lobbies
 - Add server map selection
