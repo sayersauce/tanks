@@ -27,8 +27,9 @@
 	Game.bullets = [];
 	Game.treads = [];
 	Game.blocks = [];
+	Game.scoreboard = new Game.Scoreboard(Game.width - 200, 10);
 	Game.camera = { x: 0, y: 0 };
-	Game.bounds = { x: 2000, y: 2000 };
+	Game.bounds = { x: 1500, y: 1500 };
 	Game.fullscreen = false;
 
 	// Game
@@ -44,14 +45,12 @@
 
 	function onkey(ev, key, pressed) {
 		switch(key) {
-			case "ArrowUp":
-			case "KeyW": Game.player.input.up = pressed; ev.preventDefault(); break;
-			case "ArrowDown":
-			case "KeyS": Game.player.input.down = pressed; ev.preventDefault(); break;
-			case "ArrowLeft":
-			case "KeyA": Game.player.input.left = pressed; ev.preventDefault(); break;
-			case "ArrowRight":
-			case "KeyD": Game.player.input.right = pressed; ev.preventDefault(); break;
+			case "KeyW": Game.player.input.w = pressed; ev.preventDefault(); break;
+			case "KeyS": Game.player.input.s = pressed; ev.preventDefault(); break;
+			case "KeyA": Game.player.input.a = pressed; ev.preventDefault(); break;
+			case "KeyD": Game.player.input.d = pressed; ev.preventDefault(); break;
+			case "ArrowLeft": Game.player.input.left = pressed; ev.preventDefault(); break;
+			case "ArrowRight": Game.player.input.right = pressed; ev.preventDefault(); break;
 			case "Space": Game.player.shoot(); ev.preventDefault(); break;
 		}
 	}
@@ -83,6 +82,8 @@
 		for(let player in Game.players) {
 			Game.players[player].draw();
 		}
+
+		Game.scoreboard.draw();
 	}
 	
 	function frame(last) {
@@ -94,8 +95,7 @@
 	}
 
 	function run() {
-		Game.player = new Game.Player(Util.randomInt(50, Game.bounds.x - 50), Util.randomInt(50, Game.bounds.y - 50), 0, "max");
-		Game.blocks = [new Game.Block(Game.images["rock"], 100, 100, 0)];
+		Game.player = new Game.Player(0, "max");
 		requestAnimationFrame(() => { frame(Util.timestamp()) });
 	}	
 

@@ -8,6 +8,7 @@
             this.x = x;
             this.y = y;
             this.angle = angle;
+            this.turretAngle = angle;
             this.name = name;
             this.images = [Game.images["tank"], Game.images["tank1"]];
             this.body = this.images[0];
@@ -20,7 +21,7 @@
             this.cx = this.x + this.width / 2;
             this.cy = this.y + this.height / 2;
             GFX.drawImage(this.body, this.x, this.y, this.width, this.height, this.angle);
-            GFX.drawImage(this.turret, this.cx - this.turret.width / 2, this.cy - this.turret.height / 2, this.turret.width, this.turret.width, this.angle);
+            GFX.drawImage(this.turret, this.cx - this.turret.width / 2, this.cy - this.turret.height / 2, this.turret.width, this.turret.width, this.turretAngle);
             GFX.drawText(this.name, this.cx - Game.ctx.measureText(this.name).width/2, this.cy + this.height);
         }
     }    

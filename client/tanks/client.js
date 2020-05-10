@@ -11,6 +11,7 @@ window.Socket = {};
 
     sock.on("id", data => {
         Socket.id = data;
+        Game.player.name = data;
         console.log("My name is " + data + ".");
     })
 
@@ -29,7 +30,15 @@ window.Socket = {};
         player.x = data.x;
         player.y = data.y;
         player.angle = data.angle;
+        player.turretAngle = data.turretAngle;
         player.body = player.images[data.image];
+    });
+
+    sock.on("blocks", data => {
+        Game.blocks = [];
+        for(let block of data) {
+            Game.blocks.push(new Game.Block(Game.images["rock"], block.x, block.y, 0));
+        }
     });
 
     sock.on("treads", data => {
@@ -50,7 +59,11 @@ window.Socket = {};
         if(data == Socket.id) {
             Game.player.spawn();
         }
-    })
+    });
+
+    sock.on("scoreboard", data => {
+        Game.scoreboard.values = data;
+    });
 
     // Socket Object Functions
 
