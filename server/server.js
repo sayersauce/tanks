@@ -42,11 +42,12 @@ io.on("connection", (socket) => {
 // Misc
 
 (function update() {
+    setTimeout(update, 10);
     let now = timestamp();
     let dt = (now - updateTime) / 1000;
-    updateBullets(dt);
     updateTime = now;
-    setTimeout(update, 1000/120);
+
+    updateBullets(dt);
 })();
 
 // Util
@@ -64,26 +65,22 @@ function boxCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
 function addPlayer(socket) {
     socket.emit("id", socket.id);
     for(let player in players) {
-        socket.emit("join", player);
+        socket.emit("connection", player);
     }
-    socket.broadcast.emit("join", socket.id);
+    socket.broadcast.emit("connection", socket.id);
     playerCount++;
     console.log("There are " + playerCount + " players in the lobby.")
 }
 
 function updatePlayer(socket, data) {
     players[socket.id] = data;
-    socket.broadcast.emit("position", {
-        id: socket.id,
-        x: data.x,
-        y: data.y,
-        angle: data.angle
-    });
+    data.id = socket.id;
+    socket.broadcast.emit("player", data);
 }
 
 function removePlayer(socket) {
     delete players[socket.id];
-    io.emit("leave", socket.id);
+    io.emit("disconnection", socket.id);
     playerCount--;
     console.log("There are " + playerCount + " players in the lobby.")
 }
@@ -96,6 +93,9 @@ function killPlayer(player) {
 // Bullets
 
 function addBullet(data) {
+    let bullet = data;
+    bullet.dx = Math.sin(bullet.angle * Math.PI/180);
+    bullet.dy = Math.cos(bullet.angle * Math.PI/180);
     bullets.push(data);
 }
 
@@ -103,8 +103,8 @@ function updateBullets(dt) {
     const velocity = 400;
     let newBullets = [];
     for(let bullet of bullets) {
-        bullet.x += velocity * dt * Math.sin(bullet.angle * Math.PI/180);
-        bullet.y -= velocity * dt * Math.cos(bullet.angle * Math.PI/180);
+        bullet.x += velocity * dt * bullet.dx;
+        bullet.y -= velocity * dt * bullet.dy;
         
         let collision = false;
 
@@ -112,12 +112,15 @@ function updateBullets(dt) {
         for(let p in players) {
             if(p != bullet.owner) {
                 player = players[p];
-                if(boxCollision(bullet.x, bullet.y, 0, 0, player.x, player.y, 30, 30)) {
+                if(boxCollision(bullet.x, bullet.y, 3, 3, player.x, player.y, 30, 30)) {
                     killPlayer(p);
                     collision = true;
                 }
             }
         }
+
+        // Boundary collision
+        if(bullet.y < 0 || bullet.y > 2000 || bullet.x < 0 || bullet.y > 2000) collision = true;
 
         if(!collision) {
             newBullets.push(bullet);
@@ -131,6 +134,6 @@ function updateBullets(dt) {
 
 function addTread(data) {
     treads.push(data);
-    setTimeout(() => { treads.shift(); io.emit("tread", treads); }, 30000);
+    setTimeout(() => { treads.shift(); io.emit("treads", treads); }, 30000);
     io.emit("treads", treads);
 }

@@ -99,7 +99,8 @@
             Socket.sendObject("position", {
                 x: this.x,
                 y: this.y,
-                angle: this.angle
+                angle: this.angle,
+                image: this.images.indexOf(this.body)
             });
         }
     

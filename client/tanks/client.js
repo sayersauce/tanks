@@ -14,22 +14,22 @@ window.Socket = {};
         console.log("My name is " + data + ".");
     })
 
-    sock.on("join", data => {
+    sock.on("connection", data => {
         console.log("Player: " + data + " has joined the party.")
         Game.players[data] = new Game.Tank(undefined, undefined, undefined, data);
     });
 
-    sock.on("leave", data => {
+    sock.on("disconnection", data => {
         console.log("Player: " + data + " has departed.");
         delete Game.players[data];
     });
 
-    sock.on("position", data => {
-        console.log(data);
+    sock.on("player", data => {
         let player = Game.players[data.id];
         player.x = data.x;
         player.y = data.y;
         player.angle = data.angle;
+        player.body = player.images[data.image];
     });
 
     sock.on("treads", data => {
