@@ -18,7 +18,13 @@
     
             let offset = 12;
             for(let player in this.values) {
-                ctx.fillText(player + ": " + this.values[player], this.x, this.y + offset);
+                let name = "Unknown";
+                if(Game.players[player]) {
+                    name = Game.players[player].name;
+                } else if(Socket.id == player) {
+                    name = Game.player.name;
+                }
+                ctx.fillText(name + ": " + this.values[player], this.x, this.y + offset);
                 offset += 10;
             }
         }

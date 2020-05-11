@@ -5,7 +5,7 @@
 (() => {
     class Player extends Game.Tank {
         constructor(angle, name) {
-            super(100, 100, angle, name);
+            super(undefined, undefined, angle, name);
             this.spawn();
     
             this.velocity = 0;
@@ -16,7 +16,6 @@
             this.turretVelocity = 60;
             this.cooldown = 1;
             this.lastShot = 0;
-            this.treads = [];
             this.treadDistance = 0;
     
             this.input = {
@@ -30,6 +29,10 @@
         }
     
         update(dt) {
+            if(!dt) {
+                return;
+            }
+
             // Movement
             if(this.input.w) {
                 this.velocity = Util.limit(this.velocity + this.acceleration * dt, -this.maxVelocity, this.maxVelocity);
@@ -114,8 +117,10 @@
                 y: this.y,
                 angle: this.angle,
                 turretAngle: this.turretAngle,
-                image: this.images.indexOf(this.body)
+                image: this.images.indexOf(this.body),
+                name: this.name
             });
+
         }
     
         shoot() {
@@ -132,7 +137,8 @@
                     x: this.cx,
                     y: this.cy,
                     angle: this.turretAngle,
-                    barrel: this.width / 2 + 10
+                    barrel: this.width / 2 + 10,
+                    timestamp: Util.timestamp()
                 });
                 this.lastShot = Util.timestamp();
             }

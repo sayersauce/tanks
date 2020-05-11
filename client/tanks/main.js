@@ -24,15 +24,23 @@
 	Game.ctx = canvas.getContext("2d");
 	Game.images = {};
 	Game.players = {};
-	Game.bullets = [];
+	Game.bullets = {};
 	Game.treads = [];
 	Game.blocks = [];
-	Game.scoreboard = new Game.Scoreboard(Game.width - 200, 10);
+	Game.scoreboard = new Game.Scoreboard(Game.width - 100, 10);
 	Game.camera = { x: 0, y: 0 };
 	Game.bounds = { x: 1500, y: 1500 };
 	Game.fullscreen = false;
 
 	// Game
+
+	function checkName(name) {
+		const names = ["Jerry", "Sam", "Barry", "Reginald", "Andy", "Elon", "Albert", "Clive", "Samuel", "Archibald", "Magnus"];
+		if(name.length > 20 || name == "") {
+			name = names[Util.randomInt(0, names.length)];
+		}
+		return name;
+	}
 	
 	function loadImages(names, callback) {
 		let count = names.length;
@@ -58,6 +66,9 @@
 	function update(dt) {
 		Game.player.update(dt);	
 		Game.camera = { x: Game.player.cx - canvas.width/2, y: Game.player.cy - canvas.height/2 };
+		for(let b in Game.bullets) {
+			Game.bullets[b].update(dt);
+		}
 	}
 
 	function render() {
@@ -69,8 +80,8 @@
 			tread.draw();
 		}
 
-		for(let bullet of Game.bullets) {
-			bullet.draw();
+		for(let b in Game.bullets) {
+			Game.bullets[b].draw();
 		}
 
 		for(let block of Game.blocks) {
@@ -96,19 +107,25 @@
 
 	function run() {
 		Game.player = new Game.Player(0, "max");
-		requestAnimationFrame(() => { frame(Util.timestamp()) });
-	}	
+		Game.player.name = checkName(document.getElementById("name").value);
 
-	function setup() {
-		canvas.width = Game.width;
-		canvas.height = Game.height;
+		const form = document.getElementById("start-form");
+		form.parentElement.removeChild(form);
 
 		document.addEventListener("keydown", (ev) => { return onkey(ev, ev.code, true); }, false);
 		document.addEventListener("keyup", (ev) => { return onkey(ev, ev.code, false); }, false);
 
-		loadImages(IMAGES, run);
-	}
+		Socket.init();
 
-	setup();
+		requestAnimationFrame(() => { frame(Util.timestamp()) });
+	}	
+
+	(function setup() {
+		canvas.width = Game.width;
+		canvas.height = Game.height;
+
+		document.getElementById("start-button").onclick = () => { loadImages(IMAGES, run); };
+	})();
+
 
 })();

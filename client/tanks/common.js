@@ -1,4 +1,5 @@
 Game = {};
+Socket = {};
 
 window.Util = {
     randomInt: function(min, max) {

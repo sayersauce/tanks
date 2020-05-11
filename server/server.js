@@ -5,14 +5,12 @@
 const port = 3000;
 const io = require("socket.io")(port);
 
-console.log("Server running at localhost:" + port);
-
 // Variables
 
 let playerCount = 0;
 let players = {};
 let scoreboard = {};
-let bullets = [];
+let bullets = {};
 let treads = [];
 let blocks = [];
 let updateTime = timestamp();
@@ -49,6 +47,8 @@ io.on("connection", (socket) => {
 // Misc
 
 (function init(){
+    console.log("Server running on port " + port);
+
     // Make blocks
     const noBlocks = 50;
     for(let i = 0; i < 50; i++) {
@@ -61,8 +61,9 @@ io.on("connection", (socket) => {
     update();
 })();
 
+
 function update() {
-    setTimeout(update, 10);
+    setTimeout(update, 1000/60);
     let now = timestamp();
     let dt = (now - updateTime) / 1000;
     updateTime = now;
@@ -94,6 +95,8 @@ function addPlayer(socket) {
         socket.emit("player", players[player]);
     }
     socket.emit("blocks", blocks);
+    socket.emit("treads", treads);
+    socket.emit("bullets", bullets);
 
     // Add player to scoreboard
     scoreboard[socket.id] = 0;
@@ -130,15 +133,24 @@ function killPlayer(killer, player) {
 
 function addBullet(data) {
     let bullet = data;
+    let id = Math.floor(Math.random() * timestamp());
+    bullet.id = id;
+    io.emit("addBullet", bullet);
     bullet.dx = Math.sin(bullet.angle * Math.PI/180);
     bullet.dy = Math.cos(bullet.angle * Math.PI/180);
-    bullets.push(data);
+    bullets[id] = data;
+}
+
+function removeBullet(id) {
+    delete bullets[id];
+    io.emit("removeBullet", id);
 }
 
 function updateBullets(dt) {
     const velocity = 400;
-    let newBullets = [];
-    for(let bullet of bullets) {
+
+    for(let id in bullets) {
+        let bullet = bullets[id];
         bullet.x += velocity * dt * bullet.dx;
         bullet.y -= velocity * dt * bullet.dy;
         
@@ -157,10 +169,10 @@ function updateBullets(dt) {
                 player = players[p];
                 if(boxCollision(bullet.x, bullet.y, 3, 3, player.x, player.y, 30, 30)) {
                     killPlayer(bullet.owner, p);
-                    if("kills" in players[bullet.owner]) {
+                    if(players[bullet.owner] && "kills" in players[bullet.owner]) {
                         players[bullet.owner].kills += 1;
                     } else {
-                        players[bullet.owner] = 1;
+                        players[bullet.owner].kills = 1;
                     }
                     collision = true;
                 }
@@ -170,12 +182,10 @@ function updateBullets(dt) {
         // Boundary collision
         if(bullet.y < 0 || bullet.y > bounds.y || bullet.x < 0 || bullet.x > bounds.x) collision = true;
 
-        if(!collision) {
-            newBullets.push(bullet);
+        if(collision) {
+            removeBullet(id);
         }
     }
-    bullets = newBullets;
-    io.emit("bullets", bullets);
 }
 
 // Treadmarks
@@ -183,5 +193,5 @@ function updateBullets(dt) {
 function addTread(data) {
     treads.push(data);
     setTimeout(() => { treads.shift(); io.emit("treads", treads); }, 30000);
-    io.emit("treads", treads);
+    io.emit("tread", data);
 }
