@@ -66,8 +66,15 @@
 	function update(dt) {
 		Game.player.update(dt);	
 		Game.camera = { x: Game.player.cx - canvas.width/2, y: Game.player.cy - canvas.height/2 };
+
 		for(let b in Game.bullets) {
 			Game.bullets[b].update(dt);
+		}
+		
+		for(let i = Game.treads.length - 1; i > -1; i--) {
+			if(!Game.treads[i].alive()) {
+				Game.treads.splice(i, 1);
+			}
 		}
 	}
 
@@ -79,7 +86,6 @@
 		for(let tread of Game.treads) {
 			tread.draw();
 		}
-		
 
 		for(let b in Game.bullets) {
 			Game.bullets[b].draw();
@@ -101,10 +107,6 @@
 	function frame(last) {
 		const now = Util.timestamp();
 		const dt = (now - last) / 1000;
-		if(1/dt < 30) {
-			console.log("fps: " + 1/dt);
-			console.log(Game);
-		}
 		update(dt);
 		render();
 		requestAnimationFrame(() => { frame(now) });

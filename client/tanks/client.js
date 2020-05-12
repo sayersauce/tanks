@@ -39,15 +39,19 @@
             for(let block of data) {
                 Game.blocks.push(new Game.Block(Game.images["rock"], block.x, block.y, 0));
             }
-            console.log(Game.blocks);
         });
 
         sock.on("treads", data => {
             // All current treads on server
             Game.treads = [];
             for(let tread of data) {
-                Game.treads.push(new Game.Block(Game.images["tread"], tread.x, tread.y, tread.angle));
+                Game.treads.push(new Game.Tread(tread.x, tread.y, tread.angle, tread.timestamp));
             }
+        });
+
+        sock.on("tread", tread => {
+            // Single tread
+            Game.treads.push(new Game.Tread(tread.x, tread.y, tread.angle, tread.timestamp));
         });
 
         sock.on("bullets", data => {
@@ -60,7 +64,6 @@
         });
 
         sock.on("addBullet", bullet => {
-            // Single bullet
             Game.bullets[bullet.id] = new Game.Bullet(bullet.x, bullet.y, bullet.angle, bullet.barrel);
         });
 

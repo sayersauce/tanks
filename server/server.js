@@ -16,6 +16,7 @@ let blocks = [];
 let updateTime = timestamp();
 
 // Constants
+const treadLife =  60000;
 const bounds = {
     x: 1500,
     y: 1500
@@ -69,6 +70,7 @@ function update() {
     updateTime = now;
 
     updateBullets(dt);
+    updateTreads();
 }
 
 // Util
@@ -83,6 +85,10 @@ function boxCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
 
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function randomId() {
+    return Math.floor(Math.random() * timestamp()); 
 }
 
 // Player
@@ -192,6 +198,15 @@ function updateBullets(dt) {
 
 function addTread(data) {
     treads.push(data);
-    setTimeout(() => { treads.shift(); io.emit("treads", treads); }, 30000);
-    io.emit("treads", treads);
+    io.emit("tread", data);
+}
+
+function updateTreads() {
+    let newTreads = [];
+    for(let tread of treads) {
+        if(tread.timestamp > timestamp() - treadLife) {
+            newTreads.push(tread);
+        }
+    }
+    treads = newTreads;
 }

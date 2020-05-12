@@ -137,8 +137,7 @@
                     x: this.cx,
                     y: this.cy,
                     angle: this.turretAngle,
-                    barrel: this.width / 2 + 10,
-                    timestamp: Util.timestamp()
+                    barrel: this.width / 2 + 10
                 });
                 this.lastShot = Util.timestamp();
             }
@@ -157,7 +156,8 @@
                 Socket.sendObject("tread", {
                     x: this.x,
                     y: this.cy,
-                    angle: this.angle
+                    angle: this.angle,
+                    timestamp: Util.datetime()
                 });
                 this.treadDistance = 0;
             }

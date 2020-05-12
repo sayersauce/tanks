@@ -6,7 +6,10 @@ window.Util = {
         return Math.floor(Math.random() * (max - min)) + min;
     },
     timestamp: function() {
-        return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+        return window.performance && window.performance.now ? window.performance.now() : this.datetime();
+    },
+    datetime: function() {
+        return new Date().getTime();
     },
     limit: function(value, min, max) {
         return Math.max(min, Math.min(value, max));
@@ -44,7 +47,8 @@ window.GFX = {
     },
     inView: function(x, y, width, height) {
         const coords = this.coords(x, y);
-        return !(coords.x + width < 0 || coords.x > Game.canvas.width || coords.y + height < 0 || coords.y - height > Game.canvas.height);
+        const tolerance = 50;
+        return !(coords.x + width + tolerance < 0 || coords.x - (width + tolerance) > Game.canvas.width || coords.y + height + tolerance < 0 || coords.y - (height + tolerance) > Game.canvas.height);
     },
     drawImage: function(image, x, y, width, height, rotation) {
         const ctx = Game.ctx;
