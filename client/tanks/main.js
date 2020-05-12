@@ -75,10 +75,11 @@
 		Game.ctx.clearRect(0, 0, Game.canvas.width, Game.canvas.height); 
 		Game.ctx.fillStyle = "#ffffff";
 		Game.ctx.fillRect(0, 0, Game.canvas.width, Game.canvas.height);
-
+		
 		for(let tread of Game.treads) {
 			tread.draw();
 		}
+		
 
 		for(let b in Game.bullets) {
 			Game.bullets[b].draw();
@@ -100,6 +101,10 @@
 	function frame(last) {
 		const now = Util.timestamp();
 		const dt = (now - last) / 1000;
+		if(1/dt < 30) {
+			console.log("fps: " + 1/dt);
+			console.log(Game);
+		}
 		update(dt);
 		render();
 		requestAnimationFrame(() => { frame(now) });

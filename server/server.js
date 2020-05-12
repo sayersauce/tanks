@@ -193,5 +193,5 @@ function updateBullets(dt) {
 function addTread(data) {
     treads.push(data);
     setTimeout(() => { treads.shift(); io.emit("treads", treads); }, 30000);
-    io.emit("tread", data);
+    io.emit("treads", treads);
 }

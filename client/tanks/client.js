@@ -46,13 +46,8 @@
             // All current treads on server
             Game.treads = [];
             for(let tread of data) {
-                new Game.Tread(tread.x, tread.y, tread.angle);
+                Game.treads.push(new Game.Block(Game.images["tread"], tread.x, tread.y, tread.angle));
             }
-        });
-
-        sock.on("tread", data => {
-            // Single tread
-            new Game.Tread(data.x, data.y, data.angle);
         });
 
         sock.on("bullets", data => {
