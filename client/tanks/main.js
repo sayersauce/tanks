@@ -1,6 +1,10 @@
-// Tanks
-// Max Sayer
-// https://max.lat
+/**
+ * Tanks
+ * Max Sayer
+ * https://max.lat
+ * 
+ * This file includes the main game loop.
+ */
 
 (() => {
 
@@ -36,7 +40,7 @@
 
 	function checkName(name) {
 		const names = ["Jerry", "Sam", "Barry", "Reginald", "Andy", "Elon", "Albert", "Clive", "Samuel", "Archibald", "Magnus"];
-		if(name.length > 20 || name == "") {
+		if (name.length > 20 || name == "") {
 			name = names[Util.randomInt(0, names.length)];
 		}
 		return name;
@@ -44,7 +48,7 @@
 	
 	function loadImages(names, callback) {
 		let count = names.length;
-		for(let name of names) {
+		for (let name of names) {
 			const image = new Image();
 			image.src = "res/" + name + ".png";
 			image.onload = () => { Game.images[name] = image; if (--count == 0) callback(); };
@@ -52,7 +56,7 @@
 	}
 
 	function onkey(ev, key, pressed) {
-		switch(key) {
+		switch (key) {
 			case "KeyW": Game.player.input.w = pressed; ev.preventDefault(); break;
 			case "KeyS": Game.player.input.s = pressed; ev.preventDefault(); break;
 			case "KeyA": Game.player.input.a = pressed; ev.preventDefault(); break;
@@ -67,12 +71,14 @@
 		Game.player.update(dt);	
 		Game.camera = { x: Game.player.cx - canvas.width/2, y: Game.player.cy - canvas.height/2 };
 
-		for(let b in Game.bullets) {
-			Game.bullets[b].update(dt);
+		// Update bullets
+		for (let bullet in Game.bullets) {
+			Game.bullets[bullet].update(dt);
 		}
 		
-		for(let i = Game.treads.length - 1; i > -1; i--) {
-			if(!Game.treads[i].alive()) {
+		// Update treads
+		for (let i = Game.treads.length - 1; i > -1; i--) {
+			if (!Game.treads[i].alive()) {
 				Game.treads.splice(i, 1);
 			}
 		}
@@ -83,23 +89,25 @@
 		Game.ctx.fillStyle = "#ffffff";
 		Game.ctx.fillRect(0, 0, Game.canvas.width, Game.canvas.height);
 		
-		for(let tread of Game.treads) {
+		// Draw objects
+
+		for (let tread of Game.treads) {
 			tread.draw();
 		}
 
-		for(let b in Game.bullets) {
-			Game.bullets[b].draw();
+		for (let bullet in Game.bullets) {
+			Game.bullets[bullet].draw();
 		}
 
-		for(let block of Game.blocks) {
+		for (let block of Game.blocks) {
 			block.draw();
 		}
 
-		Game.player.draw();
-
-		for(let player in Game.players) {
+		for (let player in Game.players) {
 			Game.players[player].draw();
 		}
+
+		Game.player.draw();
 
 		Game.scoreboard.draw();
 	}
@@ -133,6 +141,5 @@
 
 		document.getElementById("start-button").onclick = () => { loadImages(IMAGES, run); };
 	})();
-
 
 })();

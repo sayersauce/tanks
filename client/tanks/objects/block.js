@@ -1,6 +1,8 @@
-// Tanks - Block Object
-// Max Sayer
-// https://max.lat
+/**
+ * Tanks - Block Object
+ * Max Sayer
+ * https://max.lat
+ */
 
 (() => {
     class Block {

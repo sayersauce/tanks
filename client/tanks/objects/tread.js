@@ -1,6 +1,8 @@
-// Tanks - Tread Object
-// Max Sayer
-// https://max.lat
+/**
+ * Tanks - Tread Object
+ * Max Sayer
+ * https://max.lat
+ */
 
 (() => {
     class Tread extends Game.Block {
@@ -11,10 +13,7 @@
         }
 
         alive() {
-            if(this.timestamp > Util.datetime() - this.lifespan) {
-                return true;
-            } 
-            return false;
+            return (this.timestamp > Util.datetime() - this.lifespan);
         }
     }
 

@@ -1,11 +1,12 @@
-// Tanks - Bullet Object
-// Max Sayer
-// https://max.lat
-
-/*
-	Bullets are updated both client-side and server-side.
-	Collision detection is performed server-side.
-*/
+/**
+ * Tanks - Bullet Object
+ * Max Sayer
+ * https://max.lat
+ * 
+ * Bullets are updated both client-side and server-side.
+ * This is to make the bullets appear smooth in motion.
+ * Collision detection is performed server-side.
+ */
 
 (() => {
     class Bullet {

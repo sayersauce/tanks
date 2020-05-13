@@ -1,2 +1,2 @@
 # Tanks
- 🕹 Shoot eachother.
+A browser-based player-versus-player tank game.

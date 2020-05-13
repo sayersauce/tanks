@@ -1,14 +1,15 @@
-// Tanks - Tank Object
-// Max Sayer
-// https://max.lat
+/**
+ * Tanks - Tank Object
+ * Max Sayer
+ * https://max.lat
+ */
 
 (() => {
     class Tank {
         constructor(x, y, angle, name) {
             this.x = x;
             this.y = y;
-            this.angle = angle;
-            this.turretAngle = angle;
+            this.angle = this.turretAngle = angle;
             this.name = name;
             this.images = [Game.images["tank"], Game.images["tank1"]];
             this.body = this.images[0];

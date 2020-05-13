@@ -1,6 +1,13 @@
+/**
+ * Tanks - Helper Functions & Globals
+ * Max Sayer
+ * https://max.lat
+ */
+
 Game = {};
 Socket = {};
 
+// Utilities
 window.Util = {
     randomInt: function(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
@@ -20,23 +27,23 @@ window.Util = {
 }
 
 
+// Graphics Handler
 window.GFX = {
-    // Graphics Handler
     coords: function(x, y) {
         // Coordinates based on camera position, avoids camera moving out of the boundary
-        if(Game.camera.x > 0 && Game.camera.x < Game.bounds.x - Game.canvas.width) {
+        if (Game.camera.x > 0 && Game.camera.x < Game.bounds.x - Game.canvas.width) {
             x = x - Game.camera.x;
         }
 
-        if(Game.camera.x >= Game.bounds.x - Game.canvas.width) {
+        if (Game.camera.x >= Game.bounds.x - Game.canvas.width) {
             x = Game.canvas.width - (Game.bounds.x - x);
         }
         
-        if(Game.camera.y > 0 && Game.camera.y < Game.bounds.y - Game.canvas.height) {
+        if (Game.camera.y > 0 && Game.camera.y < Game.bounds.y - Game.canvas.height) {
             y = y - Game.camera.y;
         }
 
-        if(Game.camera.y >= Game.bounds.y - Game.canvas.height) {
+        if (Game.camera.y >= Game.bounds.y - Game.canvas.height) {
             y = Game.canvas.height - (Game.bounds.y - y);
         }
         
@@ -56,7 +63,7 @@ window.GFX = {
         const cx = coords.x + width / 2;
         const cy = coords.y + height / 2;
 
-        if(!this.inView(x, y, width, height)) {
+        if (!this.inView(x, y, width, height)) {
             return;
         }
         
@@ -70,7 +77,7 @@ window.GFX = {
         const ctx = Game.ctx;
         const coords = this.coords(x, y);
 
-        if(!this.inView(x, y, 100, 100)) {
+        if (!this.inView(x, y, 100, 100)) {
             return;
         }
 

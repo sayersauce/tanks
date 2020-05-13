@@ -1,6 +1,8 @@
-// Tanks - Player Object
-// Max Sayer
-// https://max.lat
+/**
+ * Tanks - Player Object
+ * Max Sayer
+ * https://max.lat
+ */
 
 (() => {
     class Player extends Game.Tank {
@@ -29,44 +31,41 @@
         }
     
         update(dt) {
-            if(!dt) {
+            if (!dt) {
                 return;
             }
 
             // Movement
-            if(this.input.w) {
+            if (this.input.w) {
                 this.velocity = Util.limit(this.velocity + this.acceleration * dt, -this.maxVelocity, this.maxVelocity);
-            } else if(this.input.s) {
+            } else if (this.input.s) {
                 this.velocity = Util.limit(this.velocity - this.acceleration * dt, -this.maxVelocity, this.maxVelocity);
+            } else if (this.velocity > 0) {
+                this.velocity = Util.limit(this.velocity - this.deceleration * dt, 0, this.maxVelocity);
             } else {
-                if(this.velocity > 0) {
-                    this.velocity = Util.limit(this.velocity - this.deceleration * dt, 0, this.maxVelocity);
-                } else {
-                    this.velocity = Util.limit(this.velocity + this.deceleration * dt, -this.maxVelocity, 0);
-                }
+                this.velocity = Util.limit(this.velocity + this.deceleration * dt, -this.maxVelocity, 0);
             }
         
             // Rotation
-
             let da = this.angularVelocity * dt;
 
-            if(this.input.a) {
+            if (this.input.a) {
                 this.angle -= da;
                 this.turretAngle -= da;
             }
     
-            if(this.input.d) {
+            if (this.input.d) {
                 this.angle += da;
                 this.turretAngle += da;
             }
 
             let ta = this.turretVelocity * dt;
 
-            if(this.input.left) {
+            if (this.input.left) {
                 this.turretAngle -= ta;
             }
 
-            if(this.input.right) {
+            if (this.input.right) {
                 this.turretAngle += ta;
             }
 
@@ -76,16 +75,16 @@
 
         collision(x, y, w, h) {
             // Block Collisions
-            for(let b of Game.blocks) {
-                if(Util.boxCollision(x, y, w, h, b.x, b.y, b.width, b.height)) {
+            for (let b of Game.blocks) {
+                if (Util.boxCollision(x, y, w, h, b.x, b.y, b.width, b.height)) {
                     return true;
                 }
             }
 
             // Player Collisions
-            for(let p in Game.players) {
+            for (let p in Game.players) {
                 p = Game.players[p];
-                if(Util.boxCollision(x, y, w, h, p.x, p.y, p.width, p.height)) {
+                if (Util.boxCollision(x, y, w, h, p.x, p.y, p.width, p.height)) {
                     return true;
                 }
             }
@@ -104,8 +103,8 @@
             let dx = this.velocity * dt * Math.sin(this.angle * Math.PI/180);
             let dy = this.velocity * dt * Math.cos(this.angle * Math.PI/180);
 
-            if(this.collision(this.x + dx, this.y, this.width, this.height)) dx = 0;
-            if(this.collision(this.x, this.y - dy, this.width, this.height)) dy = 0;
+            if (this.collision(this.x + dx, this.y, this.width, this.height)) dx = 0;
+            if (this.collision(this.x, this.y - dy, this.width, this.height)) dy = 0;
 
             this.x += dx;
             this.y -= dy;
@@ -124,12 +123,12 @@
         }
     
         shoot() {
-            if((Util.timestamp() - this.lastShot) / 1000 > this.cooldown) {
+            if ((Util.timestamp() - this.lastShot) / 1000 > this.cooldown) {
                 // Recoil Animation
                 let difference = Math.abs(this.turretAngle - this.angle) % 360;
-                if(difference > 315 || difference < 45) {
+                if (difference > 315 || difference < 45) {
                     this.velocity -= 50;
-                } else if(difference > 135 && difference < 225) {
+                } else if (difference > 135 && difference < 225) {
                     this.velocity += 50;
                 }
 
@@ -145,13 +144,13 @@
 
         tread() {
             // Track Animation
-            if(this.treadDistance > 5) {
+            if (this.treadDistance > 5) {
                 this.body = this.images[1];
             } else {
                 this.body = this.images[0];
             }
 
-            if(this.treadDistance > 10) {
+            if (this.treadDistance > 10) {
                 // Treadmarks
                 Socket.sendObject("tread", {
                     x: this.x,
@@ -165,7 +164,7 @@
 
         spawn() {
             let spawned = false;
-            while(!spawned) {
+            while (!spawned) {
                 this.x = Util.randomInt(50, Game.bounds.x - 50);
                 this.y = Util.randomInt(50, Game.bounds.y - 50);
                 spawned = !this.collision(this.x - 30, this.y - 30, this.width + 30, this.height + 30);
