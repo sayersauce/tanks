@@ -16,7 +16,8 @@
 		"turret",
 		"tread",
 		"shell",
-		"rock"
+		"stone",
+		"blue"
 	];
 
 	// Variables

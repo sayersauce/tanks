@@ -1,9 +1,12 @@
-// Tanks - Socket Server
-// Max Sayer
-// https://max.lat
+/**
+ * Tanks - Server
+ * Max Sayer
+ * https://max.lat
+ */
 
 const port = 3000;
 const io = require("socket.io")(port);
+const map = require("./map.js");
 
 // Variables
 
@@ -17,49 +20,21 @@ let updateTime = timestamp();
 
 // Constants
 const treadLife =  60000;
-const bounds = {
-    x: 1500,
-    y: 1500
-};
+const bounds = {};
 
-// Connection Handling
-
-io.on("connection", (socket) => {
-    addPlayer(socket);
-
-    socket.on("position", data => {
-        updatePlayer(socket, data);
-    });
-
-    socket.on("bullet", data => {
-        data.owner = socket.id;
-        addBullet(data);
-    });
-
-    socket.on("tread", data => {
-        addTread(data);
-    });
-
-    socket.on("disconnect", () => {
-        removePlayer(socket);
-    });
-});
-
-// Misc
-
-(function init(){
+function init(){
     console.log("Server running on port " + port);
 
-    // Make blocks
-    for (let i = 0; i < 50; i++) {
-        blocks.push({
-            x: randomInt(0, 1500),
-            y: randomInt(0, 1500)
-        });
-    };
+    map.load("map.png", data => {
+        blocks = data.blocks;
+        bounds.x = data.width;
+        bounds.y = data.height;
 
-    update();
-})();
+        initSocket();
+        update();
+    });
+    
+}
 
 
 function update() {
@@ -71,6 +46,32 @@ function update() {
     updateBullets(dt);
     updateTreads();
 }
+
+// Socket 
+
+function initSocket() {
+    io.on("connection", (socket) => {
+        addPlayer(socket);
+    
+        socket.on("position", data => {
+            updatePlayer(socket, data);
+        });
+    
+        socket.on("bullet", data => {
+            data.owner = socket.id;
+            addBullet(data);
+        });
+    
+        socket.on("tread", data => {
+            addTread(data);
+        });
+    
+        socket.on("disconnect", () => {
+            removePlayer(socket);
+        });
+    });
+}
+
 
 // Util
 
@@ -94,8 +95,11 @@ function randomId() {
 
 function addPlayer(socket) {
     // Send game information to the player
+    socket.emit("map", {
+        bounds: bounds,
+        blocks: blocks
+    });
     socket.emit("id", socket.id);
-    socket.emit("blocks", blocks);
     socket.emit("treads", treads);
     socket.emit("bullets", bullets);
 
@@ -208,3 +212,5 @@ function updateTreads() {
         }
     }
 }
+
+init();

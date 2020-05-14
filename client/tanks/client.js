@@ -8,7 +8,7 @@
 
     // This function connects to the server and sets out functions for sending and receiving data
     Socket.init = function() {
-        const sock = io.connect("http://localhost:3000");
+        const sock = io.connect("http://tanks.max.lat:3000");
 
         // Socket Events
 
@@ -42,11 +42,13 @@
         });
 
         // Map creation event
-        sock.on("blocks", data => {
+        sock.on("map", map => {
+            Game.bounds = map.bounds;
             Game.blocks = [];
-            for (let block of data) {
-                Game.blocks.push(new Game.Block(Game.images["rock"], block.x, block.y, 0));
+            for (let block of map.blocks) {
+                Game.blocks.push(new Game.Block(Game.images[block.image], block.x, block.y, 0));
             }
+            Game.player.spawn();
         });
 
         /**
