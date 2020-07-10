@@ -14,8 +14,8 @@
             this.maxVelocity = 150;
             this.acceleration = 100;
             this.deceleration = 150;
-            this.angularVelocity = 90;
-            this.turretVelocity = 60;
+            this.angularVelocity = 80;
+            this.turretVelocity = 80;
             this.cooldown = 1;
             this.lastShot = 0;
             this.treadDistance = 0;

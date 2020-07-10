@@ -18,7 +18,7 @@ const types = {
 };
 
 // Load map function
-exports.load = function(path, callback) {
+function load(path, callback) {
     fs.createReadStream(path).pipe(new PNG()).on("parsed", function() {
         callback({
             blocks: convertToMap(this.width, this.data),
@@ -50,3 +50,5 @@ function convertToMap(width, data) {
 
     return map;
 }
+
+exports.load = load;

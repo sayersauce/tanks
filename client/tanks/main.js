@@ -17,7 +17,8 @@
 		"tread",
 		"shell",
 		"stone",
-		"blue"
+		"blue",
+		"enemy"
 	];
 
 	// Variables
@@ -140,7 +141,11 @@
 		canvas.width = Game.width;
 		canvas.height = Game.height;
 
-		document.getElementById("start-button").onclick = () => { loadImages(IMAGES, run); };
+		document.getElementById("start-button").onclick = () => { 
+			canvas.style.opacity = "1";
+			document.getElementById("container").className = "flex-middle";
+			loadImages(IMAGES, run); 
+		};
 	})();
 
 })();

@@ -16,8 +16,8 @@
 			this.angle = angle;
 			this.dx = Math.sin(this.angle * Math.PI/180);
 			this.dy = Math.cos(this.angle * Math.PI/180);
-			this.x = x + (barrelLength * this.dx) - this.image.width/2;
-			this.y = y - (barrelLength * this.dy) - this.image.height/2;
+			this.x = x;
+			this.y = y;
 		}
 
 		update(dt) {

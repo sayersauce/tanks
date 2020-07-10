@@ -7,6 +7,7 @@
 const port = 3000;
 const io = require("socket.io")(port);
 const map = require("./map.js");
+const enemy = require("./enemy.js");
 
 // Variables
 
@@ -16,9 +17,13 @@ let scoreboard = {};
 let bullets = {};
 let treads = [];
 let blocks = [];
+let enemies = [];
 let updateTime = timestamp();
 
+
 // Constants
+
+
 const treadLife =  60000;
 const bounds = {};
 
@@ -30,12 +35,16 @@ function init(){
         bounds.x = data.width;
         bounds.y = data.height;
 
+        for (let i = 0; i < 10; i++) {
+            let e = new enemy.Enemy(100, 100, 0, randomId());
+            e.spawn(blocks, bounds, boxCollision, randomInt);
+            enemies.push(e);
+        }
+
         initSocket();
         update();
     });
-    
 }
-
 
 function update() {
     setTimeout(update, 1000/60);
@@ -45,9 +54,12 @@ function update() {
 
     updateBullets(dt);
     updateTreads();
+    updateEnemies(dt);
 }
 
+
 // Socket 
+
 
 function initSocket() {
     io.on("connection", (socket) => {
@@ -75,6 +87,7 @@ function initSocket() {
 
 // Util
 
+
 function timestamp() {
     return new Date().getTime();
 }
@@ -91,7 +104,9 @@ function randomId() {
     return Math.floor(Math.random() * timestamp()); 
 }
 
+
 // Player
+
 
 function addPlayer(socket) {
     // Send game information to the player
@@ -102,6 +117,10 @@ function addPlayer(socket) {
     socket.emit("id", socket.id);
     socket.emit("treads", treads);
     socket.emit("bullets", bullets);
+
+    for (let enemy of enemies) {
+        socket.emit("connection", enemy.id)
+    }
 
     for (let player in players) {
         socket.emit("connection", player);
@@ -139,16 +158,57 @@ function killPlayer(killer, player) {
     io.emit("scoreboard", scoreboard);
 }
 
+
+// Enemies
+
+
+function updateEnemies(dt) {
+    for (let enemy of enemies) {
+        enemy.update(dt, players, timestamp());
+        if (enemy.shooting) {
+            enemy.shooting = false;
+            addBullet({
+                x: enemy.x + enemy.width / 2,
+                y: enemy.y + enemy.height / 2,
+                angle: enemy.angle,
+                owner: enemy.id,
+                barrel: 25,
+                enemy: true
+            });
+        }
+        io.emit("player", enemyToPlayer(enemy));
+    }
+}
+
+function enemyToPlayer(enemy) {
+    return {
+        x: enemy.x,
+        y: enemy.y,
+        angle: 0,
+        turretAngle: enemy.angle,
+        image: 2,
+        name: "",
+        id: enemy.id
+    };
+}
+
+
 // Bullets
+
 
 function addBullet(data) {
     let bullet = data;
-    let id = Math.floor(Math.random() * timestamp());
-    bullet.id = id;
+    bullet.id = randomId();
+
+    let dx = Math.sin(bullet.angle * Math.PI/180);
+    let dy = Math.cos(bullet.angle * Math.PI/180);
+    this.x = bullet.x + (bullet.barrel * dx) - 15;
+    this.y = bullet.y - (bullet.barrel * dy) - 15;
+
     io.emit("addBullet", bullet);
-    bullet.dx = Math.sin(bullet.angle * Math.PI/180);
-    bullet.dy = Math.cos(bullet.angle * Math.PI/180);
-    bullets[id] = data;
+    bullet.dx = dx;
+    bullet.dy = dy;
+    bullets[bullet.id] = data;
 }
 
 function removeBullet(id) {
@@ -178,11 +238,34 @@ function updateBullets(dt) {
             if (p != bullet.owner) {
                 player = players[p];
                 if (boxCollision(bullet.x, bullet.y, 3, 3, player.x, player.y, 30, 30)) {
-                    killPlayer(bullet.owner, p);
-                    if (players[bullet.owner] && "kills" in players[bullet.owner]) {
-                        players[bullet.owner].kills += 1;
+                    if (!bullet.enemy) {
+                        killPlayer(bullet.owner, p);
+                        if (players[bullet.owner] && "kills" in players[bullet.owner]) {
+                            players[bullet.owner].kills += 1;
+                        } else {
+                            players[bullet.owner].kills = 1;
+                        }
                     } else {
-                        players[bullet.owner].kills = 1;
+                        io.emit("kill", p);
+                    }
+                    collision = true;
+                }
+            }
+        }
+
+        // Enemy collision
+        for (let enemy of enemies) {
+            if (enemy.id != bullet.owner) {
+                if (boxCollision(bullet.x, bullet.y, 3, 3, enemy.x, enemy.y, 30, 30)) {
+                    enemy.spawn(blocks, bounds, boxCollision, randomInt);
+                    if (!bullet.enemy) {
+                        if (players[bullet.owner] && "kills" in players[bullet.owner]) {
+                            players[bullet.owner].kills += 1;
+                        } else {
+                            players[bullet.owner].kills = 1;
+                        }
+                        scoreboard[bullet.owner] += 1;
+                        io.emit("scoreboard", scoreboard);
                     }
                     collision = true;
                 }
@@ -198,7 +281,9 @@ function updateBullets(dt) {
     }
 }
 
+
 // Treadmarks
+
 
 function addTread(data) {
     treads.push(data);
