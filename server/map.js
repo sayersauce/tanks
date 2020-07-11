@@ -43,6 +43,7 @@ function convertToMap(width, data) {
             block.image = types[pixel];
             block.x = ((i / 4) % width) * blockSize;
             block.y = Math.floor((i / 4) / width) * blockSize;
+            block.width = block.height = blockSize;
 
             map.push(block);
         }

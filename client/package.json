@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Max Sayer",
-  "license": "ISC",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "express": "^4.17.1"
   }

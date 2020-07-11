@@ -21,22 +21,32 @@
 		"enemy"
 	];
 
-	// Variables
-
-	Game.width = 1280;
-	Game.height = 720;
-	Game.player;
 	Game.canvas = document.getElementById("canvas");
 	Game.ctx = canvas.getContext("2d");
+	Game.width = 1280;
+	Game.height = 720;
+	Game.camera = { x: 0, y: 0 };
+	Game.bounds = { x: 1500, y: 1500 };
+	Game.fullscreen = false;
 	Game.images = {};
+	Game.player;
 	Game.players = {};
+	Game.enemies = {};
 	Game.bullets = {};
 	Game.treads = [];
 	Game.blocks = [];
 	Game.scoreboard = new Game.Scoreboard(Game.width - 100, 10);
-	Game.camera = { x: 0, y: 0 };
-	Game.bounds = { x: 1500, y: 1500 };
-	Game.fullscreen = false;
+	Game.connected = false;
+	Game.player;
+
+	Game.resetGame = () => {
+		// Resets Game variables
+		Game.players = {};
+		Game.enemies = {};
+		Game.bullets = {};
+		Game.treads = [];
+		Game.scoreboard = new Game.Scoreboard(Game.width - 100, 10);
+	}
 
 	// Game
 
@@ -107,6 +117,10 @@
 
 		for (let player in Game.players) {
 			Game.players[player].draw();
+		}
+
+		for (let enemy in Game.enemies) {
+			Game.enemies[enemy].draw();
 		}
 
 		Game.player.draw();

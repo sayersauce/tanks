@@ -76,7 +76,7 @@
         collision(x, y, w, h) {
             // Block Collisions
             for (let b of Game.blocks) {
-                if (Util.boxCollision(x, y, w, h, b.x, b.y, b.width, b.height)) {
+                if (Util.boxCollision(x + 1, y + 1, w - 2, h - 2, b.x, b.y, b.width, b.height)) {
                     return true;
                 }
             }
@@ -85,6 +85,14 @@
             for (let p in Game.players) {
                 p = Game.players[p];
                 if (Util.boxCollision(x, y, w, h, p.x, p.y, p.width, p.height)) {
+                    return true;
+                }
+            }
+
+            // Enemy Collisions
+            for (let e in Game.enemies) {
+                e = Game.enemies[e];
+                if (Util.boxCollision(x, y, w, h, e.x, e.y, e.width, e.height)) {
                     return true;
                 }
             }
@@ -164,6 +172,7 @@
 
         spawn() {
             let spawned = false;
+            this.velocity = 0;
             while (!spawned) {
                 this.x = Util.randomInt(50, Game.bounds.x - 50);
                 this.y = Util.randomInt(50, Game.bounds.y - 50);

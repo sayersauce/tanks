@@ -7,25 +7,17 @@
 const port = 3000;
 const io = require("socket.io")(port);
 const map = require("./map.js");
-const enemy = require("./enemy.js");
+const Util = require("./util.js");
+const PlayerHandler = require("./handlers/PlayerHandler.js");
+const BulletHandler = require("./handlers/BulletHandler.js");
+const TreadHandler = require("./handlers/TreadHandler.js");
+const EnemyHandler = require("./handlers/EnemyHandler.js");
 
 // Variables
 
-let playerCount = 0;
-let players = {};
-let scoreboard = {};
-let bullets = {};
-let treads = [];
 let blocks = [];
-let enemies = [];
-let updateTime = timestamp();
+let bounds = {};
 
-
-// Constants
-
-
-const treadLife =  60000;
-const bounds = {};
 
 function init(){
     console.log("Server running on port " + port);
@@ -35,26 +27,23 @@ function init(){
         bounds.x = data.width;
         bounds.y = data.height;
 
-        for (let i = 0; i < 10; i++) {
-            let e = new enemy.Enemy(100, 100, 0, randomId());
-            e.spawn(blocks, bounds, boxCollision, randomInt);
-            enemies.push(e);
-        }
+        EnemyHandler.init(blocks, bounds);
+        EnemyHandler.createStationaryEnemies(10, PlayerHandler.players);
 
         initSocket();
-        update();
+        update(Util.timestamp());
     });
 }
 
-function update() {
-    setTimeout(update, 1000/60);
-    let now = timestamp();
+function update(updateTime) {
+    let now = Util.timestamp();
     let dt = (now - updateTime) / 1000;
     updateTime = now;
+    setTimeout(() => { update(updateTime); }, 1000/60);
 
-    updateBullets(dt);
-    updateTreads();
-    updateEnemies(dt);
+    BulletHandler.updateBullets(dt, blocks, bounds, PlayerHandler, EnemyHandler, io);
+    TreadHandler.updateTreads();
+    EnemyHandler.updateEnemies(dt, PlayerHandler.players, BulletHandler, io);
 }
 
 
@@ -63,239 +52,27 @@ function update() {
 
 function initSocket() {
     io.on("connection", (socket) => {
-        addPlayer(socket);
+        PlayerHandler.addPlayer(socket, { bounds: bounds, blocks: blocks }, TreadHandler.treads, BulletHandler.bullets, EnemyHandler.enemies);
     
         socket.on("position", data => {
-            updatePlayer(socket, data);
+            PlayerHandler.updatePlayer(socket, data);
         });
     
         socket.on("bullet", data => {
             data.owner = socket.id;
-            addBullet(data);
+            BulletHandler.addBullet(data, io);
         });
     
         socket.on("tread", data => {
-            addTread(data);
+            TreadHandler.addTread(data);
+            io.emit("tread", data);
         });
     
         socket.on("disconnect", () => {
-            removePlayer(socket);
+            PlayerHandler.removePlayer(socket, io);
         });
     });
 }
 
-
-// Util
-
-
-function timestamp() {
-    return new Date().getTime();
-}
-
-function boxCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
-    return (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2);
-}
-
-function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
-function randomId() {
-    return Math.floor(Math.random() * timestamp()); 
-}
-
-
-// Player
-
-
-function addPlayer(socket) {
-    // Send game information to the player
-    socket.emit("map", {
-        bounds: bounds,
-        blocks: blocks
-    });
-    socket.emit("id", socket.id);
-    socket.emit("treads", treads);
-    socket.emit("bullets", bullets);
-
-    for (let enemy of enemies) {
-        socket.emit("connection", enemy.id)
-    }
-
-    for (let player in players) {
-        socket.emit("connection", player);
-        socket.emit("player", players[player]);
-    }
-
-    // Add player to scoreboard
-    scoreboard[socket.id] = 0;
-    socket.emit("scoreboard", scoreboard);
-
-    // Inform other players of a new player
-    socket.broadcast.emit("connection", socket.id);
-    playerCount++;
-    console.log("There are " + playerCount + " players in the lobby.")
-}
-
-function updatePlayer(socket, data) {
-    data.id = socket.id;
-    players[socket.id] = data;
-    socket.broadcast.emit("player", players[socket.id]);
-}
-
-function removePlayer(socket) {
-    delete players[socket.id];
-    delete scoreboard[socket.id];
-    io.emit("disconnection", socket.id);
-    playerCount--;
-    console.log("There are " + playerCount + " players in the lobby.")
-}
-
-function killPlayer(killer, player) {
-    console.log(killer + " killed " + player);
-    scoreboard[killer] += 1;
-    io.emit("kill", player);
-    io.emit("scoreboard", scoreboard);
-}
-
-
-// Enemies
-
-
-function updateEnemies(dt) {
-    for (let enemy of enemies) {
-        enemy.update(dt, players, timestamp());
-        if (enemy.shooting) {
-            enemy.shooting = false;
-            addBullet({
-                x: enemy.x + enemy.width / 2,
-                y: enemy.y + enemy.height / 2,
-                angle: enemy.angle,
-                owner: enemy.id,
-                barrel: 25,
-                enemy: true
-            });
-        }
-        io.emit("player", enemyToPlayer(enemy));
-    }
-}
-
-function enemyToPlayer(enemy) {
-    return {
-        x: enemy.x,
-        y: enemy.y,
-        angle: 0,
-        turretAngle: enemy.angle,
-        image: 2,
-        name: "",
-        id: enemy.id
-    };
-}
-
-
-// Bullets
-
-
-function addBullet(data) {
-    let bullet = data;
-    bullet.id = randomId();
-
-    let dx = Math.sin(bullet.angle * Math.PI/180);
-    let dy = Math.cos(bullet.angle * Math.PI/180);
-    this.x = bullet.x + (bullet.barrel * dx) - 15;
-    this.y = bullet.y - (bullet.barrel * dy) - 15;
-
-    io.emit("addBullet", bullet);
-    bullet.dx = dx;
-    bullet.dy = dy;
-    bullets[bullet.id] = data;
-}
-
-function removeBullet(id) {
-    delete bullets[id];
-    io.emit("removeBullet", id);
-}
-
-function updateBullets(dt) {
-    const velocity = 400;
-
-    for (let id in bullets) {
-        let bullet = bullets[id];
-        bullet.x += velocity * dt * bullet.dx;
-        bullet.y -= velocity * dt * bullet.dy;
-        
-        let collision = false;
-
-        // Block collision
-        for (let b of blocks) {
-            if (boxCollision(bullet.x, bullet.y, 3, 3, b.x, b.y, 30, 30)) {
-                collision = true;
-            }
-        }
-
-        // Player collision
-        for (let p in players) {
-            if (p != bullet.owner) {
-                player = players[p];
-                if (boxCollision(bullet.x, bullet.y, 3, 3, player.x, player.y, 30, 30)) {
-                    if (!bullet.enemy) {
-                        killPlayer(bullet.owner, p);
-                        if (players[bullet.owner] && "kills" in players[bullet.owner]) {
-                            players[bullet.owner].kills += 1;
-                        } else {
-                            players[bullet.owner].kills = 1;
-                        }
-                    } else {
-                        io.emit("kill", p);
-                    }
-                    collision = true;
-                }
-            }
-        }
-
-        // Enemy collision
-        for (let enemy of enemies) {
-            if (enemy.id != bullet.owner) {
-                if (boxCollision(bullet.x, bullet.y, 3, 3, enemy.x, enemy.y, 30, 30)) {
-                    enemy.spawn(blocks, bounds, boxCollision, randomInt);
-                    if (!bullet.enemy) {
-                        if (players[bullet.owner] && "kills" in players[bullet.owner]) {
-                            players[bullet.owner].kills += 1;
-                        } else {
-                            players[bullet.owner].kills = 1;
-                        }
-                        scoreboard[bullet.owner] += 1;
-                        io.emit("scoreboard", scoreboard);
-                    }
-                    collision = true;
-                }
-            }
-        }
-
-        // Boundary collision
-        if (bullet.y < 0 || bullet.y > bounds.y || bullet.x < 0 || bullet.x > bounds.x) collision = true;
-
-        if (collision) {
-            removeBullet(id);
-        }
-    }
-}
-
-
-// Treadmarks
-
-
-function addTread(data) {
-    treads.push(data);
-    io.emit("tread", data);
-}
-
-function updateTreads() {
-    for (let i = treads.length - 1; i > -1; i--) {
-        if (!(treads[i].timestamp > timestamp() - treadLife)) {
-            treads.splice(i, 1);
-        }
-    }
-}
 
 init();

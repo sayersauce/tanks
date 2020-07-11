@@ -14,8 +14,14 @@
 
         // Client receiving it's server-side ID
         sock.on("id", data => {
+            // This also means that if the client is reconnecting then it needs to wipe its current Game State
             Socket.id = data;
             console.log("My real name is " + data + ".");
+            if (Game.connected) {
+                Game.resetGame();
+            } else {
+                Game.connected = true;
+            }
         });
 
         // Player connection event
@@ -39,6 +45,23 @@
             player.turretAngle = data.turretAngle;
             player.body = player.images[data.image];
             player.name = data.name;
+        });
+
+        // Enemy update event
+        sock.on("enemy", data => {
+            let enemy;
+            if (!(data.id in Game.enemies)) {
+                Game.enemies[data.id] = new Game.Tank(data.x, data.y, data.angle, "");
+                enemy = Game.enemies[data.id];
+                enemy.body = enemy.images[2];
+            } else {
+                enemy = Game.enemies[data.id];
+                enemy.x = data.x;
+                enemy.y = data.y;
+                enemy.angle = data.angle;
+            }
+            enemy.turretAngle = data.turretAngle;
+            // must have x y angle turretAngle
         });
 
         // Map creation event
