@@ -3,29 +3,30 @@ Tanks is a multiplayer HTML5 browser game. This is a project I have worked on pe
 
 ## Structure
 `/client`: An [Express.js][express] app which hosts the client-side in-browser files.
+
 `/server`: A [Socket.IO][socketio] app which is the game server.
 
 ## Features
-[x] Multiplayer
-[x] Player control
-[x] Camera
-[x] Basic scoreboard
-[x] Basic sprites
-[x] Stationary Enemies
-[x] Level loading from `.png`
+ [x] Multiplayer
+ [x] Player control
+ [x] Camera
+ [x] Basic scoreboard
+ [x] Basic sprites
+ [x] Stationary Enemies
+ [x] Level loading from `.png`
 
 ## Todo
-[-] Title Screen
-[-] PvP Gamemode
-[-] Co-op Gamemode
-[-] Pathfinding Enemies
-[-] Gameplay loop or objective
-[-] Good sprites
-[-] Sounds
-[-] Music
-[-] Animations
-[-] Pre-made levels
-[-] Procedurally generated levels 
+ [-] Title Screen
+ [-] PvP Gamemode
+ [-] Co-op Gamemode
+ [-] Pathfinding Enemies
+ [-] Gameplay loop or objective
+ [-] Good sprites
+ [-] Sounds
+ [-] Music
+ [-] Animations
+ [-] Pre-made levels
+ [-] Procedurally generated levels 
 
 ## Dependencies
 See respective `package.json` files.
