@@ -31,6 +31,8 @@
         }
     
         update(dt) {
+            super.update();
+
             if (!dt) {
                 return;
             }

@@ -10,7 +10,7 @@
 
 (() => {
     class Bullet {
-		constructor(x, y, angle, barrelLength) {
+		constructor(x, y, angle, id) {
 			this.velocity = 400;
 			this.image = Game.images["shell"];
 			this.angle = angle;
@@ -18,11 +18,18 @@
 			this.dy = Math.cos(this.angle * Math.PI/180);
 			this.x = x;
 			this.y = y;
+			this.id = id;
+			this.exploding = false;
 		}
 
 		update(dt) {
-			this.x += dt * this.velocity * this.dx;
-			this.y -= dt * this.velocity * this.dy;
+			if (!this.exploding) {
+				this.x += dt * this.velocity * this.dx;
+				this.y -= dt * this.velocity * this.dy;
+			} else {
+				console.log("bullet exploding");
+				delete Game.bullets[this.id];
+			}
 		}
 
 		draw() {

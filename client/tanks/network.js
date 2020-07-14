@@ -104,12 +104,17 @@
 
         // Bullet creation event
         sock.on("addBullet", bullet => {
-            Game.bullets[bullet.id] = new Game.Bullet(bullet.x, bullet.y, bullet.angle, bullet.barrel);
+            if (bullet.owner in Game.enemies) {
+                Game.enemies[bullet.owner].lastShot = Util.timestamp();
+            } else if (bullet.owner in Game.players) {
+                Game.players[bullet.owner].lastShot = Util.timestamp();
+            }
+            Game.bullets[bullet.id] = new Game.Bullet(bullet.x, bullet.y, bullet.angle, bullet.id);
         });
 
         // Bullet destruction event
         sock.on("removeBullet", bullet => {
-            delete Game.bullets[bullet];
+            Game.bullets[bullet].exploding = true;
         });
 
         // Player death event

@@ -18,7 +18,12 @@
 		"shell",
 		"stone",
 		"blue",
-		"enemy"
+		"enemy",
+		"turret_shoot_1",
+		"turret_shoot_2",
+		"turret_shoot_3",
+		"turret_shoot_4",
+		"turret_shoot_5",
 	];
 
 	Game.canvas = document.getElementById("canvas");
@@ -93,6 +98,15 @@
 			if (!Game.treads[i].alive()) {
 				Game.treads.splice(i, 1);
 			}
+		}
+
+		// Update tanks
+		for (let player in Game.players) {
+			Game.players[player].update();
+		}
+
+		for (let enemy in Game.enemies) {
+			Game.enemies[enemy].update();
 		}
 	}
 
