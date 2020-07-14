@@ -23,7 +23,7 @@
             // Shooting Animation
             let turretAnimations = [Game.images["turret_shoot_1"], Game.images["turret_shoot_2"], Game.images["turret_shoot_3"], Game.images["turret_shoot_4"], Game.images["turret_shoot_5"]];
             let noSprites = turretAnimations.length;
-            let frametime = 40;
+            let frametime = 30;
             let timeDifference = Util.timestamp() - (noSprites * frametime);
 
             if (timeDifference < this.lastShot) {

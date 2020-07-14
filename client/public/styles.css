@@ -27,3 +27,8 @@ canvas {
 	justify-content: center;
 	align-items: center;
 }
+
+#logo {
+	width: 400px;
+	margin: 50px;
+}

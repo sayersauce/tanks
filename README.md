@@ -1,4 +1,5 @@
-# Tanks
+<img src="./client/res/logo.svg" width="400px">
+
 Tanks is a multiplayer HTML5 browser game. This is a project I have worked on periodically with different iterations since 2018. It is currently far from being complete. The game is written in JavaScript both on the front-end and back-end. The game draws a lot of inspiration from [a game for the Nintendo Wii][tanks]. Eventually I plan to host this game on my website when it is in a more finished state.
 
 ## Structure
