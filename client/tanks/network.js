@@ -114,7 +114,7 @@
 
         // Bullet destruction event
         sock.on("removeBullet", bullet => {
-            Game.bullets[bullet].exploding = true;
+            delete Game.bullets[bullet];
         });
 
         // Player death event

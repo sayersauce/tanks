@@ -15,7 +15,7 @@
 		"tank1",
 		"turret",
 		"tread",
-		"shell",
+		"bullet",
 		"stone",
 		"blue",
 		"enemy",
@@ -24,6 +24,7 @@
 		"turret_shoot_3",
 		"turret_shoot_4",
 		"turret_shoot_5",
+		"turret_shoot_6",
 	];
 
 	Game.canvas = document.getElementById("canvas");

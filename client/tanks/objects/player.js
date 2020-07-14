@@ -178,7 +178,7 @@
             while (!spawned) {
                 this.x = Util.randomInt(50, Game.bounds.x - 50);
                 this.y = Util.randomInt(50, Game.bounds.y - 50);
-                spawned = !this.collision(this.x - 30, this.y - 30, this.width + 30, this.height + 30);
+                spawned = !this.collision(this.x - this.width, this.y - this.height, this.width + this.width, this.height + this.height);
             }
         }
     }

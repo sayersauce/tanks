@@ -11,6 +11,10 @@ class BulletHandler {
     constructor() {
         this.bullets = {};
         this.velocity = 400;
+        this.dimensions = {
+            w: 4,
+            h: 6
+        };
     }
 
     addBullet(data, io) {
@@ -40,10 +44,21 @@ class BulletHandler {
             bullet.y -= this.velocity * dt * bullet.dy;
             
             let collision = false;
+
+            // Bullet collision
+            for (let b in this.bullets) {
+                if (b != id) {
+                    b = this.bullets[b];
+                    if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, b.x, b.y, this.dimensions.w, this.dimensions.h)) {
+                        collision = true;
+                        this.removeBullet(b.id, io);
+                    }
+                }
+            }
     
             // Block collision
             for (let b of blocks) {
-                if (Util.boxCollision(bullet.x, bullet.y, 3, 3, b.x, b.y, 30, 30)) {
+                if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, b.x, b.y, 30, 30)) {
                     collision = true;
                 }
             }
@@ -52,7 +67,7 @@ class BulletHandler {
             for (let p in PlayerHandler.players) {
                 if (p != bullet.owner) {
                     let player = PlayerHandler.players[p];
-                    if (Util.boxCollision(bullet.x, bullet.y, 3, 3, player.x, player.y, 30, 30)) {
+                    if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, player.x, player.y, 30, 30)) {
                         if (!bullet.enemy) {
                             PlayerHandler.killPlayer(bullet.owner, p);
                             if (PlayerHandler.players[bullet.owner] && "kills" in PlayerHandler.players[bullet.owner]) {
@@ -71,7 +86,7 @@ class BulletHandler {
             // Enemy collision
             for (let enemy of EnemyHandler.enemies) {
                 if (enemy.id != bullet.owner) {
-                    if (Util.boxCollision(bullet.x, bullet.y, 3, 3, enemy.x, enemy.y, 30, 30)) {
+                    if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, enemy.x, enemy.y, 30, 30)) {
                         enemy.spawn(blocks, bounds, PlayerHandler.players, EnemyHandler.enemies);
                         if (!bullet.enemy) {
                             if (PlayerHandler.players[bullet.owner] && "kills" in PlayerHandler.players[bullet.owner]) {
