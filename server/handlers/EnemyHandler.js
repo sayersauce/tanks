@@ -6,6 +6,7 @@
 
 const Util = require("../util.js");
 const { Shooter } = require("../objects/shooter.js");
+const { Follower } = require("../objects/follower.js");
 
 
 class EnemyHandler {
@@ -14,16 +15,26 @@ class EnemyHandler {
         this.enemies = [];
     }
 
-    init(blocks, bounds) {
+    init(blocks, bounds, blockSize, TreadHandler) {
         this.map = {
             blocks: blocks,
             bounds: bounds
         }
+        this.blockSize = blockSize;
+        this.TreadHandler = TreadHandler;
+        this.cols = bounds.x / blockSize;
+        this.rows = bounds.y / blockSize;
+
+        // Convert walls to nodes
+        this.walls = [];
+        for (let wall of blocks) {
+            this.walls.push({ x: Math.floor(wall.x / blockSize), y: Math.floor(wall.y / blockSize )});
+        }
     }
 
-    createStationaryEnemies (n, players) {
+    createEnemies (n, players) {
         for (let i = 0; i < n; i++) {
-            let e = new Shooter(undefined, undefined, 0, Util.randomId());
+            let e = new Follower(undefined, undefined, 0, Util.randomId(), this.blockSize, this.rows, this.cols, this.walls, this.map, this.TreadHandler);
             e.spawn(this.map.blocks, this.map.bounds, players, this.enemies)
             this.enemies.push(e);
         }
@@ -31,7 +42,7 @@ class EnemyHandler {
 
     updateEnemies (dt, players, BulletHandler, io) {
         for (let enemy of this.enemies) {
-            enemy.update(dt, players, Util.timestamp());
+            enemy.update(dt, players, this.enemies, Util.timestamp());
             if (enemy.shooting) {
                 enemy.shooting = false;
                 BulletHandler.addBullet({

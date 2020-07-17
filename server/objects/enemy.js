@@ -15,7 +15,7 @@ class Enemy {
         this.turretAngle = a;
         this.id = id;
         this.viewRadius = 500; 
-        this.angularSpeed = 50;
+        this.turretSpeed = 50;
         this.lastShot = 0;
         this.cooldown = 2;
         this.shooting = false;
@@ -60,9 +60,9 @@ class Enemy {
 
         if (Math.abs(difference) > 1) {
             if (difference < 0) {
-                this.rotateTurret(this.angularSpeed, dt);
+                this.rotateTurret(this.turretSpeed, dt);
             } else {
-                this.rotateTurret(-this.angularSpeed, dt);
+                this.rotateTurret(-this.turretSpeed, dt);
             }
         } else {
             if ((timestamp - this.lastShot) / 1000 > this.cooldown) {
@@ -101,9 +101,8 @@ class Enemy {
         }
 
         // Enemy Collisions
-        for (let e in enemies) {
-            if (e != this.id) {
-                e = enemies[e];
+        for (let e of enemies) {
+            if (e.id != this.id) {
                 if (Util.boxCollision(x, y, w, h, e.x, e.y, e.width, e.height)) {
                     return true;
                 }

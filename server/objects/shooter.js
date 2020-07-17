@@ -14,7 +14,6 @@ class Shooter extends Enemy {
     constructor(x, y, a, id) {
         super(x, y, a, id);
         this.viewRadius = 400; 
-        this.angularSpeed = 50;
         this.lastShot = 0;
         this.cooldown = 2;
     }

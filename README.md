@@ -14,13 +14,13 @@ Tanks is a multiplayer HTML5 browser game. This is a project I have worked on pe
 - [x] Basic scoreboard
 - [x] Basic sprites
 - [x] Stationary Enemies
+- [x] Basic Pathfinding Enemies
 - [x] Level loading from `.png`
 
 ## Todo
 - [ ] Title Screen
 - [ ] PvP Gamemode
 - [ ] Co-op Gamemode
-- [ ] Pathfinding Enemies
 - [ ] Gameplay loop or objective
 - [ ] Good sprites
 - [ ] Sounds

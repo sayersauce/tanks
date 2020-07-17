@@ -12,6 +12,7 @@ const PlayerHandler = require("./handlers/PlayerHandler.js");
 const BulletHandler = require("./handlers/BulletHandler.js");
 const TreadHandler = require("./handlers/TreadHandler.js");
 const EnemyHandler = require("./handlers/EnemyHandler.js");
+const blockSize = 30;
 
 // Variables
 
@@ -27,8 +28,9 @@ function init(){
         bounds.x = data.width;
         bounds.y = data.height;
 
-        EnemyHandler.init(blocks, bounds);
-        EnemyHandler.createStationaryEnemies(10, PlayerHandler.players);
+        TreadHandler.init(io);
+        EnemyHandler.init(blocks, bounds, blockSize, TreadHandler);
+        EnemyHandler.createEnemies(10, PlayerHandler.players);
 
         initSocket();
         update(Util.timestamp());
@@ -65,7 +67,6 @@ function initSocket() {
     
         socket.on("tread", data => {
             TreadHandler.addTread(data);
-            io.emit("tread", data);
         });
     
         socket.on("disconnect", () => {

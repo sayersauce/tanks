@@ -13,8 +13,13 @@ class TreadHandler {
         this.treadLife =  60000;
     }
 
+    init(io) {
+        this.io = io;
+    }
+
     addTread(data) {
         this.treads.push(data);
+        this.io.emit("tread", data);
     }
 
     updateTreads() {

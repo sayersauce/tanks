@@ -137,9 +137,9 @@
                 // Recoil Animation
                 let difference = Math.abs(this.turretAngle - this.angle) % 360;
                 if (difference > 315 || difference < 45) {
-                    this.velocity -= 50;
+                    this.velocity -= 40;
                 } else if (difference > 135 && difference < 225) {
-                    this.velocity += 50;
+                    this.velocity += 40;
                 }
 
                 Socket.sendObject("bullet", {
