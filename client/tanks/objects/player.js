@@ -11,7 +11,7 @@
             this.spawn();
     
             this.velocity = 0;
-            this.maxVelocity = 150;
+            this.maxVelocity = 140;
             this.acceleration = 100;
             this.deceleration = 150;
             this.angularVelocity = 80;
@@ -124,6 +124,8 @@
             Socket.sendObject("position", {
                 x: this.x,
                 y: this.y,
+                width: this.width,
+                height: this.height,
                 angle: this.angle,
                 turretAngle: this.turretAngle,
                 image: this.images.indexOf(this.body),

@@ -11,7 +11,7 @@
 (() => {
     class Bullet {
 		constructor(x, y, angle) {
-			this.velocity = 400;
+			this.velocity = 350;
 			this.image = Game.images["bullet"];
 			this.width = this.image.width;
 			this.height = this.image.height;

@@ -32,7 +32,15 @@ class EnemyHandler {
         }
     }
 
-    createEnemies (n, players) {
+    createShooters(n, players) {
+        for (let i = 0; i < n; i++) {
+            let e = new Shooter(undefined, undefined, 0, Util.randomId());
+            e.spawn(this.map.blocks, this.map.bounds, players, this.enemies)
+            this.enemies.push(e);
+        }
+    }
+
+    createFollowers (n, players) {
         for (let i = 0; i < n; i++) {
             let e = new Follower(undefined, undefined, 0, Util.randomId(), this.blockSize, this.rows, this.cols, this.walls, this.map, this.TreadHandler);
             e.spawn(this.map.blocks, this.map.bounds, players, this.enemies)

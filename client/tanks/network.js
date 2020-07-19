@@ -53,7 +53,6 @@
             if (!(data.id in Game.enemies)) {
                 Game.enemies[data.id] = new Game.Tank(data.x, data.y, data.angle, "");
                 enemy = Game.enemies[data.id];
-                enemy.body = enemy.images[2];
             } else {
                 enemy = Game.enemies[data.id];
                 enemy.x = data.x;
@@ -61,6 +60,7 @@
                 enemy.angle = data.angle;
             }
             enemy.turretAngle = data.turretAngle;
+            enemy.body = Game.images[data.image];
             // must have x y angle turretAngle
         });
 

@@ -91,5 +91,17 @@ window.GFX = {
         ctx.font = "10px Arial";
         ctx.fillStyle = "#000000";
         ctx.fillText(text, coords.x, coords.y);
+    },
+
+    fillRect: function(x, y, w, h, col) {
+        const ctx = Game.ctx;
+        const coords = this.coords(x, y);
+
+        if (!this.inView(x, y, w, h)) {
+            return;
+        }
+
+        ctx.fillStyle = col;
+        ctx.fillRect(coords.x, coords.y, w, h)
     }
 }

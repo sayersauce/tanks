@@ -21,6 +21,7 @@ class Enemy {
         this.shooting = false;
         this.width = 30;
         this.height = 30;
+        this.image = "shooter";
     }
 
     check(players) {
@@ -138,7 +139,8 @@ class Enemy {
             y: this.y,
             angle: this.angle,
             turretAngle: this.turretAngle,
-            id: this.id
+            id: this.id,
+            image: this.image
         };
     }
     

@@ -18,7 +18,7 @@ class Shooter extends Enemy {
         this.cooldown = 2;
     }
 
-    update(dt, players, timestamp) {
+    update(dt, players, enemies, timestamp) {
         // Check for targets
         this.check(players);
 

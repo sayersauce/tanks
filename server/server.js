@@ -30,7 +30,8 @@ function init(){
 
         TreadHandler.init(io);
         EnemyHandler.init(blocks, bounds, blockSize, TreadHandler);
-        EnemyHandler.createEnemies(10, PlayerHandler.players);
+        //EnemyHandler.createShooters(5, PlayerHandler.players);
+        EnemyHandler.createFollowers(10, PlayerHandler.players);
 
         initSocket();
         update(Util.timestamp());

@@ -10,7 +10,7 @@ const Util = require("../util.js");
 class BulletHandler {
     constructor() {
         this.bullets = {};
-        this.velocity = 400;
+        this.velocity = 350;
         this.dimensions = {
             w: 4,
             h: 6
@@ -69,7 +69,7 @@ class BulletHandler {
                     let player = PlayerHandler.players[p];
                     if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, player.x, player.y, 30, 30)) {
                         if (!bullet.enemy) {
-                            PlayerHandler.killPlayer(bullet.owner, p);
+                            io.emit("kill", p);
                             if (PlayerHandler.players[bullet.owner] && "kills" in PlayerHandler.players[bullet.owner]) {
                                 PlayerHandler.players[bullet.owner].kills += 1;
                             } else {
@@ -90,7 +90,7 @@ class BulletHandler {
                         enemy.spawn(blocks, bounds, PlayerHandler.players, EnemyHandler.enemies);
                         if (!bullet.enemy) {
                             if (PlayerHandler.players[bullet.owner] && "kills" in PlayerHandler.players[bullet.owner]) {
-                                players[bullet.owner].kills += 1;
+                                PlayerHandler.players[bullet.owner].kills += 1;
                             } else {
                                 PlayerHandler.players[bullet.owner].kills = 1;
                             }

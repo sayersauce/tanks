@@ -11,7 +11,7 @@
             this.y = y;
             this.angle = this.turretAngle = angle;
             this.name = name;
-            this.images = [Game.images["tank"], Game.images["tank1"], Game.images["enemy"]];
+            this.images = [Game.images["tank"], Game.images["tank1"]];
             this.body = this.images[0];
             this.turret = Game.images["turret"];
             this.width = this.body.width;

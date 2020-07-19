@@ -44,6 +44,12 @@ class Grid {
     }
 
     getNode(pos) {
+        if (pos.x < 0) {
+            pos.x = 0;
+        }
+        if (pos.y < 0) {
+            pos.y = 0;
+        }
         if (this.nodes[pos.y] && this.nodes[pos.y][pos.x]) return this.nodes[pos.y][pos.x];
     }
 
