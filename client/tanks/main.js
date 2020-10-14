@@ -153,6 +153,7 @@
 		const dt = (now - last) / 1000;
 		update(dt);
 		render();
+		Game.ctx.fillText(1/dt, canvas.width - 16, 10);
 		requestAnimationFrame(() => { frame(now) });
 	}
 
@@ -160,13 +161,13 @@
 		Game.player = new Game.Player(0, "max");
 		Game.player.name = checkName(document.getElementById("name").value);
 
-		const form = document.getElementById("start-form");
-		form.parentElement.removeChild(form);
-
 		document.addEventListener("keydown", (ev) => { return onkey(ev, ev.code, true); }, false);
 		document.addEventListener("keyup", (ev) => { return onkey(ev, ev.code, false); }, false);
 
-		Socket.init();
+		Socket.init(document.getElementById("ip").value);
+
+		const form = document.getElementById("start-form");
+		form.parentElement.removeChild(form);
 
 		requestAnimationFrame(() => { frame(Util.timestamp()) });
 	}	

@@ -124,8 +124,6 @@
             Socket.sendObject("position", {
                 x: this.x,
                 y: this.y,
-                width: this.width,
-                height: this.height,
                 angle: this.angle,
                 turretAngle: this.turretAngle,
                 image: this.images.indexOf(this.body),

@@ -67,7 +67,7 @@ class Enemy {
             }
         } else {
             if ((timestamp - this.lastShot) / 1000 > this.cooldown) {
-                this.shooting = true;
+                //this.shooting = true;
                 this.lastShot = timestamp;
             }
         }

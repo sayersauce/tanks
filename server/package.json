@@ -9,6 +9,7 @@
   "author": "Max Sayer",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "nodemon": "^2.0.5",
     "pngjs": "^5.0.0",
     "socket.io": "^2.3.0"
   }

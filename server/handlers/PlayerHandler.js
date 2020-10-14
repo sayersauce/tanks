@@ -10,6 +10,8 @@ class PlayerHandler {
         this.players = {};
         this.scoreboard = {};
         this.playerCount = 0;
+        this.width = 30;
+        this.height = 30;
     }
 
     addPlayer(socket, map, treads, bullets, enemies) {
@@ -40,6 +42,8 @@ class PlayerHandler {
 
     updatePlayer(socket, data) {
         data.id = socket.id;
+        data.width = this.width;
+        data.height = this.height;
         this.players[socket.id] = data;
         socket.broadcast.emit("player", this.players[socket.id]);
     }

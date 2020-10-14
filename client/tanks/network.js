@@ -7,8 +7,8 @@
 (() => {
 
     // This function connects to the server and sets out functions for sending and receiving data
-    Socket.init = function() {
-        const sock = io.connect("http://tanks.max.lat:3000");
+    Socket.init = function(ip) {
+        const sock = io.connect(`http://${ip}:3000`);
 
         // Socket Events
 
