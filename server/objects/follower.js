@@ -14,7 +14,7 @@ class Follower extends Enemy {
     constructor(x, y, a, id, blockSize, rows, cols, walls, map, TreadHandler) {
         super(x, y, a, id);
         this.viewRadius = 800; 
-        this.bubble = 120;
+        this.bubble = 30;
         this.turretSpeed = 100;
         this.velocity = 110;
         this.angularVelocity = 100;
@@ -44,15 +44,35 @@ class Follower extends Enemy {
 
             if ((timestamp - this.pathfindTime) / 1000 > this.pathfindInterval) {
                 // New grid must be created every time
-                let Grid = new Pathfinding.Grid(this.rows, this.cols, this.walls)
+                
+                
+                let colliders = [...this.walls];
+                for (let e of enemies) {
+                    // Make box 2x2 box around each enemy
+                    let north = Math.round(e.y / this.blockSize);
+                    let south = Math.round((e.y + e.height) / this.blockSize);
+                    let east = Math.round((e.x + e.width) / this.blockSize);
+                    let west = Math.round(e.x / this.blockSize);
+
+                    //colliders.push({x: east, y: north});
+                    //colliders.push({x: west, y: north});
+                    //colliders.push({x: east, y: south});
+                    //colliders.push({x: west, y: south});
+                    
+                    let x = Math.round(e.x / this.blockSize);
+                    let y = Math.round(e.y / this.blockSize);
+                    colliders.push({x: x, y: y, enemy: true});
+                }
+
+                let Grid = new Pathfinding.Grid(this.rows, this.cols, colliders)
                 let AStar = new Pathfinding.AStar(Grid);
 
                 let player = players[this.targetId];
 
-                let nodeX = Math.floor(this.x / this.blockSize);
-                let nodeY = Math.floor(this.y / this.blockSize);
-                let playerX = Math.floor(player.x / this.blockSize);
-                let playerY = Math.floor(player.y / this.blockSize);
+                let nodeX = Math.floor((this.x + this.width / 2) / this.blockSize);
+                let nodeY = Math.floor((this.y + this.height / 2) / this.blockSize);
+                let playerX = Math.floor((player.x + player.width / 2) / this.blockSize);
+                let playerY = Math.floor((player.y + player.height / 2) / this.blockSize);
 
                 let routeNodes = AStar.pathfind(Grid.getNode({ x: nodeX, y: nodeY }), Grid.getNode({ x: playerX, y: playerY }), this.Grid);
                 this.route = [];
@@ -99,6 +119,34 @@ class Follower extends Enemy {
         if (this.route.length > 1) {
             let nextNode = this.route[0];
 
+            let angleTo = (Math.atan2(nextNode.y - this.y, nextNode.x - this.x) * 180 / Math.PI) + 90;
+            this.angle = angleTo;
+
+            // Checking for collisions and personal bubble before moving
+
+            let distanceToTarget = Math.sqrt((this.x - players[this.targetId].x)**2 + (this.y - players[this.targetId].y)**2);
+            let dx = this.velocity * dt * Math.sin(this.angle * Math.PI/180);
+            let dy = this.velocity * dt * Math.cos(this.angle * Math.PI/180);
+
+            // Additional pixel tolerance
+            let tolerance = 0;
+
+            if (!this.collision(this.x + dx + tolerance, (this.y - dy) - tolerance, this.width - (2 * tolerance), this.height - (2 * tolerance), [], this.map.bounds, players, []) && distanceToTarget > this.bubble) {
+                this.x += dx;
+                this.y -= dy;    
+                this.treadDistance += Math.abs(dx) + Math.abs(dy);
+            }
+
+            // Removing nodes from the route when reached
+
+            let nodeX = Math.floor((this.x + this.width / 2) / this.blockSize);
+            let nodeY = Math.floor((this.y + this.height / 2) / this.blockSize);
+
+            if (nodeX == nextNode.x / this.blockSize && nodeY == nextNode.y / this.blockSize) {
+                this.route.splice(0, 1);
+            }
+
+            /* Old Code
             // Turning to next node
 
             let angleTo = (Math.atan2(nextNode.y - this.y, nextNode.x - this.x) * 180 / Math.PI) + 90;
@@ -161,6 +209,7 @@ class Follower extends Enemy {
             if (nodeX == nextNode.x / this.blockSize && nodeY == nextNode.y / this.blockSize) {
                 this.route.splice(0, 1);
             }
+            */
         }
     }
 

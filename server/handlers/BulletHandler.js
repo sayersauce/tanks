@@ -76,7 +76,7 @@ class BulletHandler {
                                 PlayerHandler.players[bullet.owner].kills = 1;
                             }
                         } else {
-                            io.emit("kill", p);
+                            //io.emit("kill", p);
                         }
                         collision = true;
                     }
