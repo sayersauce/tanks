@@ -15,13 +15,12 @@ class EnemyHandler {
         this.enemies = [];
     }
 
-    init(blocks, bounds, blockSize, TreadHandler) {
+    init(blocks, bounds, blockSize) {
         this.map = {
             blocks: blocks,
             bounds: bounds
         }
         this.blockSize = blockSize;
-        this.TreadHandler = TreadHandler;
         this.cols = bounds.x / blockSize;
         this.rows = bounds.y / blockSize;
 
@@ -35,15 +34,15 @@ class EnemyHandler {
     createShooters(n, players) {
         for (let i = 0; i < n; i++) {
             let e = new Shooter(undefined, undefined, 0, Util.randomId());
-            e.spawn(this.map.blocks, this.map.bounds, players, this.enemies)
+            e.spawn(this.map.blocks, this.map.bounds, players, this.enemies);
             this.enemies.push(e);
         }
     }
 
     createFollowers (n, players) {
         for (let i = 0; i < n; i++) {
-            let e = new Follower(undefined, undefined, 0, Util.randomId(), this.blockSize, this.rows, this.cols, this.walls, this.map, this.TreadHandler);
-            e.spawn(this.map.blocks, this.map.bounds, players, this.enemies)
+            let e = new Follower(undefined, undefined, 0, Util.randomId(), this.blockSize, this.rows, this.cols, this.walls, this.map);
+            e.spawn(this.map.blocks, this.map.bounds, players, this.enemies);
             this.enemies.push(e);
         }
     }

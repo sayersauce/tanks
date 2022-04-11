@@ -6,7 +6,6 @@
 
 const Util = require("../util.js");
 
-
 class BulletHandler {
     constructor() {
         this.bullets = {};
@@ -17,7 +16,11 @@ class BulletHandler {
         };
     }
 
-    addBullet(data, io) {
+    init(io) {
+        this.io = io;
+    }
+
+    addBullet(data) {
         let bullet = data;
         bullet.id = Util.randomId();
     
@@ -26,18 +29,18 @@ class BulletHandler {
         bullet.x = bullet.x + (bullet.barrel * dx);
         bullet.y = bullet.y - (bullet.barrel * dy);
     
-        io.emit("addBullet", bullet);
+        this.io.emit("addBullet", bullet);
         bullet.dx = dx;
         bullet.dy = dy;
         this.bullets[bullet.id] = data;
     }
 
-    removeBullet(id, io) {
+    removeBullet(id) {
         delete this.bullets[id];
-        io.emit("removeBullet", id);
+        this.io.emit("removeBullet", id);
     }
 
-    updateBullets(dt, blocks, bounds, PlayerHandler, EnemyHandler, io) {    
+    updateBullets(dt, blocks, bounds, PlayerHandler, EnemyHandler) {    
         for (let id in this.bullets) {
             let bullet = this.bullets[id];
             bullet.x += this.velocity * dt * bullet.dx;
@@ -51,7 +54,7 @@ class BulletHandler {
                     b = this.bullets[b];
                     if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, b.x, b.y, this.dimensions.w, this.dimensions.h)) {
                         collision = true;
-                        this.removeBullet(b.id, io);
+                        this.removeBullet(b.id, this.io);
                     }
                 }
             }
@@ -69,15 +72,15 @@ class BulletHandler {
                     let player = PlayerHandler.players[p];
                     if (Util.boxCollision(bullet.x - this.dimensions.w / 2 , bullet.y - this.dimensions.h / 2, this.dimensions.w, this.dimensions.h, player.x, player.y, 30, 30)) {
                         if (!bullet.enemy) {
-                            io.emit("kill", p);
                             if (PlayerHandler.players[bullet.owner] && "kills" in PlayerHandler.players[bullet.owner]) {
                                 PlayerHandler.players[bullet.owner].kills += 1;
                             } else {
                                 PlayerHandler.players[bullet.owner].kills = 1;
                             }
-                        } else {
-                            //io.emit("kill", p);
                         }
+                        this.io.emit("kill", p);
+                        player.spawn(blocks, bounds, PlayerHandler.players, EnemyHandler.enemies);
+                        this.io.emit("player", player.data());
                         collision = true;
                     }
                 }
@@ -95,7 +98,7 @@ class BulletHandler {
                                 PlayerHandler.players[bullet.owner].kills = 1;
                             }
                             PlayerHandler.scoreboard[bullet.owner] += 1;
-                            io.emit("scoreboard", PlayerHandler.scoreboard);
+                            this.io.emit("scoreboard", PlayerHandler.scoreboard);
                         }
                         collision = true;
                     }
@@ -106,7 +109,7 @@ class BulletHandler {
             if (bullet.y < 0 || bullet.y > bounds.y || bullet.x < 0 || bullet.x > bounds.x) collision = true;
     
             if (collision) {
-                this.removeBullet(id, io);
+                this.removeBullet(id);
             }
         }
     }

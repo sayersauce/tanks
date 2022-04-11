@@ -4,6 +4,7 @@
  * https://max.lat
  */
 
+const { Player } = require("../objects/player");
 
 class PlayerHandler {
     constructor() {
@@ -14,7 +15,23 @@ class PlayerHandler {
         this.height = 30;
     }
 
-    addPlayer(socket, map, treads, bullets, enemies) {
+    init(blocks, bounds, blockSize) {
+        this.map = {
+            blocks: blocks,
+            bounds: bounds
+        }
+        this.blockSize = blockSize;
+        this.cols = bounds.x / blockSize;
+        this.rows = bounds.y / blockSize;
+
+        // Convert walls to nodes
+        this.walls = [];
+        for (let wall of blocks) {
+            this.walls.push({ x: Math.floor(wall.x / blockSize), y: Math.floor(wall.y / blockSize )});
+        }
+    }
+
+    addPlayer(io, socket, map, treads, bullets, enemies) {
         // Send game information to the player
         socket.emit("map", map);
         socket.emit("id", socket.id);
@@ -33,19 +50,22 @@ class PlayerHandler {
         // Add player to scoreboard
         this.scoreboard[socket.id] = 0;
         socket.emit("scoreboard", this.scoreboard);
+
+        // Create player
+        this.players[socket.id] = new Player(socket.id, this.blockSize, this.rows, this.cols, this.walls, this.map);
+        this.players[socket.id].spawn(this.map.blocks, this.map.bounds, this.players, enemies);
     
         // Inform other players of a new player
         socket.broadcast.emit("connection", socket.id);
+        io.emit("player", this.players[socket.id].data());
         this.playerCount++;
         console.log("There are " + this.playerCount + " players in the lobby.")
     }
 
-    updatePlayer(socket, data) {
-        data.id = socket.id;
-        data.width = this.width;
-        data.height = this.height;
-        this.players[socket.id] = data;
-        socket.broadcast.emit("player", this.players[socket.id]);
+    updatePlayer(io, socket, data, enemies) {
+        let player = this.players[socket.id];
+        player.update(data, this.players, enemies);
+        io.emit("player", player.data());
     }
 
     removePlayer(socket, io) {

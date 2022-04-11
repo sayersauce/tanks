@@ -38,7 +38,13 @@
 
         // Player update event
         sock.on("player", data => {
-            let player = Game.players[data.id];
+            let player = undefined;
+            if (Socket.id == data.id) {
+                player = Game.player;
+            } else {
+                player = Game.players[data.id];
+            }
+
             player.x = data.x;
             player.y = data.y;
             player.angle = data.angle;
@@ -71,7 +77,6 @@
             for (let block of map.blocks) {
                 Game.blocks.push(new Game.Block(Game.images[block.image], block.x, block.y, 0));
             }
-            Game.player.spawn();
         });
 
         /**
@@ -108,6 +113,8 @@
                 Game.enemies[bullet.owner].lastShot = Util.timestamp();
             } else if (bullet.owner in Game.players) {
                 Game.players[bullet.owner].lastShot = Util.timestamp();
+            } else if (bullet.owner = Socket.id) {
+                Game.player.lastShot = Util.timestamp();
             }
             Game.bullets[bullet.id] = new Game.Bullet(bullet.x, bullet.y, bullet.angle, bullet.id);
         });
@@ -120,7 +127,7 @@
         // Player death event
         sock.on("kill", data => {
             if (data == Socket.id) {
-                Game.player.spawn();
+                //console.log("Player killed")
             }
         });
 

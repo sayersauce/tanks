@@ -86,7 +86,7 @@
 			case "KeyD": Game.player.input.d = pressed; ev.preventDefault(); break;
 			case "ArrowLeft": Game.player.input.left = pressed; ev.preventDefault(); break;
 			case "ArrowRight": Game.player.input.right = pressed; ev.preventDefault(); break;
-			case "Space": Game.player.shoot(); ev.preventDefault(); break;
+			case "Space": Game.player.input.space = pressed; ev.preventDefault(); break;
 		}
 	}
 
